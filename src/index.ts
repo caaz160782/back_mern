@@ -1,0 +1,26 @@
+
+import config from './config/config'; 
+import { db } from "./config/db";
+import express, { Request, Response } from 'express';
+import colors from 'colors';
+
+
+
+const app = express();
+const PORT = config.app.port
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('¡Hola, TypeScript con Express!');
+});
+
+// Conectar a la base de datos al iniciar el servidor
+db.connect()
+  .then(() => {
+    console.log(colors.green("DB conectada"));
+    app.listen(PORT, () => {
+      console.log(colors.green(`Server is running on http://localhost:${PORT}`));
+    });
+  })
+  .catch((err) => {
+    console.error(colors.red(`Conexión rechazada, ${err}`));
+  });

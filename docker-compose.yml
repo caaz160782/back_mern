@@ -1,0 +1,17 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mern    
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin_uptaskMern
+      MONGO_INITDB_ROOT_PASSWORD: c4AZ240710%
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js  # Mount the init script
+    command: --auth  # Enforce authentication
+
+volumes:
+  mongo_data:
+    driver: local
