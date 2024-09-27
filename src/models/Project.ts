@@ -9,7 +9,7 @@ interface IProject extends Document {
 const projectSchema: Schema<IProject> = new Schema<IProject>({
   projectName: {
     type: String,
-    minlength:5 ,
+    minlength:3 ,
     trim:true,    
     required: [true, "Project projectName is required."],
   },

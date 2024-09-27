@@ -4,6 +4,8 @@ import { db } from "./config/db";
 import express, { Request, Response } from 'express';
 import colors from 'colors';
 import apiRouter from './routes';
+import swaggerUi  from 'swagger-ui-express';
+import swaggerDocs from './config/swagger';
 
 const server = express();
 const PORT = config.app.port
@@ -14,6 +16,9 @@ server.get('/', (req: Request, res: Response) => {
 
 server.use(express.json());
 apiRouter(server);
+
+// Ruta para la documentación Swagger
+server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Conectar a la base de datos al iniciar el servidor
 db.connect()
