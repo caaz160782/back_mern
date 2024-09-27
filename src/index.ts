@@ -5,7 +5,6 @@ import express, { Request, Response } from 'express';
 import colors from 'colors';
 import apiRouter from './routes';
 
-
 const server = express();
 const PORT = config.app.port
 
@@ -13,6 +12,7 @@ server.get('/', (req: Request, res: Response) => {
   res.send('¡Hola, TypeScript con Express!');
 });
 
+server.use(express.json());
 apiRouter(server);
 
 // Conectar a la base de datos al iniciar el servidor
