@@ -18,7 +18,6 @@ export const getAllProjects = async (req: Request, res: Response) => {
   };   
 export const createProject = async (req:Request, res:Response) => {
     try {
-        console.log(req.body)
         const project= new Project(req.body);
         const savedProject = await project.save();
          res.status(201).json({
