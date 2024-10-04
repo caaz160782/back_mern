@@ -1,24 +1,13 @@
-<<<<<<< HEAD
-import  { Router} from "express";
-import { getAllProjects,
-         createProject,
-         getProjectById,
-         updateProject,
-         deleteProject,
-         createTask
-         } from "../controllers/projects";
-import { check,param } from 'express-validator';
-=======
 import { Router } from "express";
 import {
     getAllProjects,
     createProject,
     getProjectById,
     updateProject,
-    deleteProject
+    deleteProject,
+    createTask
 } from "../controllers/projects";
 import { check, param } from 'express-validator';
->>>>>>> main
 import { validarErrores } from "../middlewares/generalErros";
 import { validarProjectExist } from "../middlewares/project";
 
@@ -214,10 +203,10 @@ router.patch('/:idProject', // Validaciones
  *         description: Proyecto no encontrado
  */
 router.delete('/:idProject',
-<<<<<<< HEAD
               param('idProject').isMongoId().withMessage('id no valido'),
               validarErrores,
               deleteProject );   
+
 router.post('/:id_project/tasks',[ 
    check('name')
     .isLength({ min: 5 })
@@ -227,11 +216,5 @@ router.post('/:id_project/tasks',[
     .withMessage('La descripción debe tener al menos 5 caracteres'),
   validarErrores      
 ],validarProjectExist,createTask)
-=======
-    param('idProject').isMongoId().withMessage('id no valido'),
-    validarErrores,
-    deleteProject
-);
->>>>>>> main
 
 export default router;
