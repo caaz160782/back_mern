@@ -1,5 +1,6 @@
 import { Request,Response } from "express";
-import { Project } from '../../models/Project'; // Import the type for Rol if available
+import { Project } from '../../models/Project'; 
+import { Task } from "../../models/Task";
 
 export const getAllProjects = async (req: Request, res: Response) => {
     try {
@@ -109,6 +110,28 @@ export const deleteProject = async (req: Request, res: Response) => {
       });
     }
   };
+export const createTask = async (req:Request, res:Response) => {
+    try {    
+     const task= new Task(req.body);
+      task.id_project= req.project.id
+      req.project.tasks.push(task.id)
+      await Promise.allSettled([task.save(),req.project.save()])
+      res.status(201).json({
+           message: "Created successfully",
+           //payload:  savedTask
+       })  
+     
+    }
+    catch (error) {
+      console.error('Error al crear tarea:', error);
+      // Devolver una respuesta de error 500 si algo falla
+      return res.status(500).json({
+        message: "Error en el servidor al crear tarea",
+        error: error.message, 
+        });
+    }
+  }
+
   
        
   
