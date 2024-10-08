@@ -11,7 +11,7 @@ declare global{
 
 export  const validarProjectExist = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {id_project} = req.params         
+        const {id_project} = req.params             
         const project = await Project.findById(id_project)    
         if (!project) {
           return res.status(404).json({

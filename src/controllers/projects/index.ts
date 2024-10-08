@@ -39,7 +39,7 @@ export const createProject = async (req:Request, res:Response) => {
 export const getProjectById = async (req: Request, res: Response) => {
     try {
       const {idProject} = req.params 
-      const project = await Project.findById(idProject)
+      const project = await Project.findById(idProject).populate('tasks')
   
       if (!project) {
         return res.status(404).json({
@@ -110,27 +110,6 @@ export const deleteProject = async (req: Request, res: Response) => {
       });
     }
   };
-export const createTask = async (req:Request, res:Response) => {
-    try {    
-     const task= new Task(req.body);
-      task.id_project= req.project.id
-      req.project.tasks.push(task.id)
-      await Promise.allSettled([task.save(),req.project.save()])
-      res.status(201).json({
-           message: "Created successfully",
-           //payload:  savedTask
-       })  
-     
-    }
-    catch (error) {
-      console.error('Error al crear tarea:', error);
-      // Devolver una respuesta de error 500 si algo falla
-      return res.status(500).json({
-        message: "Error en el servidor al crear tarea",
-        error: error.message, 
-        });
-    }
-  }
 
   
        
