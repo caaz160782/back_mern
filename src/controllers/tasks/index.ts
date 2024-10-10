@@ -66,5 +66,58 @@ export const getTaskById = async (req: Request, res: Response) => {
     });
   }
 };
+export const updatedTask = async (req: Request, res: Response) => {
+  try {
+    const { id_task } = req.params;
+
+    const updatedTask = await Task.findByIdAndUpdate(
+      id_task,
+      req.body,
+      { new: true, runValidators: true } // `new` returns the updated document, `runValidators` checks for validation
+    );
+
+    if (!updatedTask) {
+      return res.status(404).json({
+        message: "tasks not found"
+      });
+    }
+
+    return res.status(200).json({
+      message: "Task updated successfully",
+      payload: updatedTask
+    });
+
+  } catch (error) {
+    console.error('Error al actualizar el Task:', error);
+    return res.status(500).json({
+      message: "Error en el servidor al actualizar el Task",
+      error: error.message,
+    });
+  }
+}; 
+
+export const deleteTask = async (req: Request, res: Response) => {  
+  try {
+    const { id_task } = req.params;
+    const deletedTask = await Task.findByIdAndDelete(id_task);
+ 
+    if (!deletedTask) {
+      return res.status(404).json({
+        message: "Task not found"
+      });
+    }
+
+    return res.status(200).json({
+      message: "Task deleted successfully"
+    });
+
+  } catch (error) {
+    console.error('Error deleting Project:', error);
+    return res.status(500).json({
+      message: "Server error while deleting the Task",
+      error: error.message,
+    });
+  }
+};
 
 
