@@ -99,7 +99,9 @@ export const updatedTask = async (req: Request, res: Response) => {
 export const deleteTask = async (req: Request, res: Response) => {  
   try {
     const { id_task } = req.params;
+    req.project.tasks = req.project.tasks.filter(task => task.toString() !== id_task)
     const deletedTask = await Task.findByIdAndDelete(id_task);
+    await req.project.save()
  
     if (!deletedTask) {
       return res.status(404).json({
