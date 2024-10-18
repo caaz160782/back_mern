@@ -1,6 +1,6 @@
 import  { Router} from "express";
-import { createTask, deleteTask, getAllTasks, getTaskById, updatedTask } from "../controllers/tasks";
-import { check, param } from 'express-validator';
+import { createTask, deleteTask, getAllTasks, getTaskById, updatedStatus, updatedTask } from "../controllers/tasks";
+import { body, check, param } from 'express-validator';
 import { validarErrores } from "../middlewares/generalErros";
 import { validarProjectExist } from "../middlewares/project";
 
@@ -50,5 +50,9 @@ router.delete('/:id_project/tasks/:id_task',
   validarErrores,
   deleteTask );   
 
-  
+router.post('/:id_project/tasks/:id_task/status', 
+        param('id_task').isMongoId().withMessage('id no valido'),
+        body('status').notEmpty().withMessage('El estado es obligatorio'),
+        validarErrores,updatedStatus);
+        
 export default router;
