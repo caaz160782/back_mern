@@ -1,5 +1,7 @@
 
 import config from './config/config'; 
+import cors from 'cors' 
+import { corsConfig } from './config/cors';
 import { db } from "./config/db";
 import express, { Request, Response } from 'express';
 import colors from 'colors';
@@ -7,7 +9,11 @@ import apiRouter from './routes';
 import swaggerUi  from 'swagger-ui-express';
 import swaggerDocs from './config/swagger';
 
+
+
 const server = express();
+server.use(cors(corsConfig))
+
 const PORT = config.app.port
 
 server.get('/', (req: Request, res: Response) => {
