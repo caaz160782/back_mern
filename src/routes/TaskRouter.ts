@@ -4,8 +4,6 @@ import { body, check, param } from 'express-validator';
 import { validarErrores } from "../middlewares/generalErros";
 import { validarProjectExist } from "../middlewares/project";
 
-
-
 const router =Router();
 
 router.param('id_project',validarProjectExist)

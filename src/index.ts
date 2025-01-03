@@ -8,13 +8,14 @@ import colors from 'colors';
 import apiRouter from './routes';
 import swaggerUi  from 'swagger-ui-express';
 import swaggerDocs from './config/swagger';
-
-
+import morgan from 'morgan';
 
 const server = express();
 server.use(cors(corsConfig))
 
 const PORT = config.app.port
+
+server.use(morgan('dev'))
 
 server.get('/', (req: Request, res: Response) => {
   res.send('¡Hola, TypeScript con Express!');
