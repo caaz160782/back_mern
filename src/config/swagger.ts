@@ -11,7 +11,7 @@ const swaggerOptions: swaggerJSDoc.Options = {
       }
     ],
     info: {
-      title: 'PERN',
+      title: 'mERN',
       version: '1.0.0',
       description: 'Documentación de la API con Swagger',
     },
