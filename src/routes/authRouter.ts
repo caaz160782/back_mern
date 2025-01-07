@@ -1,5 +1,21 @@
 import { Router } from "express";
+import { body, check, param } from 'express-validator';
+import { AuthController } from "../controllers/auth";
+import { validarErrores } from "../middlewares/generalErros";
 
 const router = Router();
+
+router.post('/create-account',
+    body('name').notEmpty().withMessage('el nombre no puede ser vacio'),   
+    body('email').isEmail().withMessage('email no valido')  ,
+    body('password').isLength({min:8}).withMessage('el psw es muy corto'),
+    body('password-confirmation').custom((value,{req})=>{
+        if(value !== req.body.password){
+            throw new Error('los PAssword no son iguales')
+        }
+        return true
+    }),
+    validarErrores,
+    AuthController.createAccount);
 
 export default router;
