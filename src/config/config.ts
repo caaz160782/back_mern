@@ -9,6 +9,13 @@ const config = {
   },
   jwt: { secret: process.env.SECRET },
   app: { port: process.env.PORT },
+  email :{
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    user: process.env.SMTP_USER,    
+    pass: process.env.SMTP_PASS
+  }
+
 };
 
 export default config;  
