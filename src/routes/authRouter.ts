@@ -23,4 +23,10 @@ router.post('/confirm-account',
         validarErrores,
         AuthController.confirmAccount);    
 
+router.post('/login',
+    body('email').isEmail().withMessage('email no valido')  ,
+    body('password').notEmpty().withMessage('el psw no puede ser vacio'),   
+            validarErrores,
+            AuthController.login);            
+
 export default router;
