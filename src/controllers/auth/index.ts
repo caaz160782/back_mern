@@ -61,5 +61,42 @@ export class AuthController {
         }        
     }
 
+    static login = async (req: Request,res:Response)=>{
+        try {
+          const {email,password} = req.body           
+          const userExists = await User.findOne({email})
+          if(!userExists){
+            const error = new Error('el Usuario no esta Registrado');
+            return res.status(404).json({error: error.message})
+             }
+          if(!userExists.confirmed){
+            const token = new Token()
+            token.token= generateToken()
+            token.user = userExists.id
+           
+            AuthEmail.sendConfirmationEmail({
+                email:userExists.email,
+                name:userExists.name,
+                token:token.token 
+            })
+            token.save()
+            const error = new Error('se ha enviado un nuevo token');
+            return res.status(401).json({error: error.message})
+          }
+          const match = await hash.verifyPassword(password, userExists.password);
+          if (!match) {
+              const error = new Error('error psw');
+             return res.status(409).json({error: error.message})
+           }
+          res.send('Cuenta confirmada')   
+        } catch (error) {
+            console.error('Error login:', error);
+            return res.status(500).json({
+              message: "Error login",
+              error: error.message,
+            });
+        }        
+    }
+
 
 }
