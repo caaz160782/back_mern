@@ -1,4 +1,5 @@
 import { transporter } from "../config/nodemailer"
+import config from "../config/config"
 
 interface IEmail {
     email: string
@@ -15,7 +16,7 @@ export class AuthEmail {
             html:`<p> Hola ${user.name}, has creado tu cuenta  
                    solo debes de confirmar tu cuenta  </p>
                    <p>Visita el sig link</p>
-                   <a href="">Confirmar cuenta</a>
+                   <a href="${config.urlFront}/auth/confirm-account">Confirmar cuenta</a>
                    <p> Ingresa el siguiente codigo ${user.token}</p>
                    <p>Expira en 10 minutos</p>
                    `
