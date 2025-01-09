@@ -9,7 +9,7 @@ router.post('/create-account',
     body('name').notEmpty().withMessage('el nombre no puede ser vacio'),   
     body('email').isEmail().withMessage('email no valido')  ,
     body('password').isLength({min:8}).withMessage('el psw es muy corto'),
-    body('password-confirmation').custom((value,{req})=>{
+    body('password_confirmation').custom((value,{req})=>{
         if(value !== req.body.password){
             throw new Error('los PAssword no son iguales')
         }
