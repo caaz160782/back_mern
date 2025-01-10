@@ -27,6 +27,11 @@ router.post('/login',
     body('email').isEmail().withMessage('email no valido')  ,
     body('password').notEmpty().withMessage('el psw no puede ser vacio'),   
             validarErrores,
-            AuthController.login);            
+            AuthController.login);      
+            
+router.post('/request-code',
+            body('email').isEmail().withMessage('email no valido')  ,              
+            validarErrores,
+            AuthController.requestConfirmationCode);
 
 export default router;

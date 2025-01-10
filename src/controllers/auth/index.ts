@@ -98,5 +98,40 @@ export class AuthController {
         }        
     }
 
+    static requestConfirmationCode = async (req: Request,res:Response)=>{
+      try {
+      const { email } = req.body;
+      const user = await User.findOne({email})
+      if(!user){
+          const error = new Error('el Usuario na esta Registrado');
+          return res.status(409).json({error: error.message})
+      }
+
+      if(user.confirmed){
+        const error = new Error('el Usuario ya fue confirmado');
+        return res.status(409).json({error: error.message})
+    }
+      //generar token
+      const token = new Token()
+      token.token= generateToken()
+      token.user = user.id
+     
+      AuthEmail.sendConfirmationEmail({
+          email:user.email,
+          name:user.name,
+          token:token.token 
+      })
+
+      await Promise.allSettled([user.save(), token.save()]);           
+      res.send('se envio un token a tu email')              
+      } catch (error) {
+          console.error('Error al crear usuario:', error);
+          return res.status(500).json({
+            message: "Error al crear usuario",
+            error: error.message,
+          });
+      }        
+  }
+
 
 }
