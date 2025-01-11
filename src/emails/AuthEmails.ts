@@ -23,4 +23,19 @@ export class AuthEmail {
         })
         console.log('Email enviado', info.messageId)
     }
+
+    static sendPasswordResetToken = async (user:IEmail)=>{
+        const info= await transporter.sendMail({
+             from : 'uptask <admin@upstask.com>',
+             to: user.email,
+             subject: 'uptask -reestablece tu password',
+             html:`<p> Hola ${user.name}, has solicitado reestablecer tu password</p>
+                    <p>Visita el sig link</p>
+                    <a href="${config.urlFront}/auth/new-password">Reestablecer Password</a>
+                    <p> Ingresa el siguiente codigo ${user.token}</p>
+                    <p>Expira en 10 minutos</p>
+                    `
+         })
+         console.log('Email enviado', info.messageId)
+     }
 }
