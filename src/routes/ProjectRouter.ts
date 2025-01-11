@@ -10,6 +10,7 @@ import {
 import { check, param } from 'express-validator';
 import { validarErrores } from "../middlewares/generalErros";
 import { validarProjectExist } from "../middlewares/project";
+import { authenticate } from "../middlewares/auth";
 
 
 const router = Router();
@@ -115,6 +116,7 @@ router.get("/:idProject",
  */
 router.post(
     "/",
+    authenticate,
     [
         check('projectName')
             .isLength({ min: 3 })
