@@ -34,4 +34,28 @@ router.post('/request-code',
             validarErrores,
             AuthController.requestConfirmationCode);
 
+router.post('/forgot-password',
+             body('email').isEmail().withMessage('email no valido')  ,              
+             validarErrores,
+             AuthController.forgotPassword);
+
+router.post('/validate-token',
+                body('token').notEmpty().withMessage('el token no puede ser vacio'),   
+                validarErrores,
+                AuthController.validateToken);  
+
+router.post('/update-password/:token',
+           param('token').isNumeric().withMessage('token no valido'),
+           body('password').isLength({min:8}).withMessage('el psw es muy corto'),
+           body('password_confirmation').custom((value,{req})=>{
+            if(value !== req.body.password){
+                throw new Error('los PAssword no son iguales')
+            }
+            return true
+            }),
+            validarErrores,
+            AuthController.updatePasswordWithToken);  
+
+
+
 export default router;

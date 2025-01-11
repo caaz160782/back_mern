@@ -131,7 +131,76 @@ export class AuthController {
             error: error.message,
           });
       }        
+    }
+    
+    static forgotPassword = async (req: Request,res:Response)=>{
+      try {
+      const { email } = req.body;
+      const user = await User.findOne({email})
+      if(!user){
+          const error = new Error('el Usuario na esta Registrado');
+          return res.status(409).json({error: error.message})
+      }    
+      //generar token
+      const token = new Token()
+      token.token= generateToken()
+      token.user = user.id
+      await token.save()
+      AuthEmail.sendPasswordResetToken({
+          email:user.email,
+          name:user.name,
+          token:token.token 
+      })      
+      res.send('Revisar tu email para instrucciones')              
+      } catch (error) {
+          console.error('Error al crear usuario:', error);
+          return res.status(500).json({
+            message: "Error al crear usuario",
+            error: error.message,
+          });
+      }        
+    }
+
+    static validateToken = async (req: Request,res:Response)=>{
+      try {
+         const {token} = req.body           
+         const tokenExist= await Token.findOne({token})
+         if(!tokenExist){
+          const error = new Error('el token ya no esta disponible o no existe');
+          return res.status(401).json({error: error.message})
+          }
+        
+
+          res.send('Token válido, define tu nuevo password')   
+      } catch (error) {
+          console.error('Error token:', error);
+          return res.status(500).json({
+            message: "Error token",
+            error: error.message,
+          });
+      }        
   }
 
+  static updatePasswordWithToken = async (req: Request,res:Response)=>{
+    try {
+       const {token} = req.params     
+       const { password } = req.body;      
+       const tokenExist= await Token.findOne({token})
+       if(!tokenExist){
+        const error = new Error('el token ya no esta disponible o no existe');
+        return res.status(401).json({error: error.message})
+        }
+        const user = await User.findById(tokenExist.user)
+        user.password=  await hash.hashPassword(password)
+        await Promise.allSettled([user.save(), tokenExist.deleteOne()]);  
+        res.send('Password modificado')   
+    } catch (error) {
+        console.error('Error token:', error);
+        return res.status(500).json({
+          message: "Error token",
+          error: error.message,
+        });
+    }        
+}
 
 }
