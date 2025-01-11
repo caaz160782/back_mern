@@ -2,9 +2,9 @@ import { Request,Response } from "express";
 import { User } from "../../models/user";
 import { Token } from "../../models/Token";
 import { generateToken } from "../../helpers/token";
-import { transporter } from "../../config/nodemailer";
 import { AuthEmail } from "../../emails/AuthEmails";
 const hash = require("../../helpers//bcrypt")
+const jwt = require("../../helpers/jwt");
 
 export class AuthController {
 
@@ -87,8 +87,14 @@ export class AuthController {
           if (!match) {
               const error = new Error('error psw');
              return res.status(409).json({error: error.message})
-           }
-          res.send('Cuenta confirmada')   
+           }        
+          const payload = {
+            id:  userExists._id.toString(),
+            name: userExists.name,           
+          };
+          const jwtRes = jwt.token(payload);
+          res.status(202).json({jwtRes });
+
         } catch (error) {
             console.error('Error login:', error);
             return res.status(500).json({

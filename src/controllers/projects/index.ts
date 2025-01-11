@@ -1,6 +1,6 @@
 import { Request,Response } from "express";
 import { Project } from '../../models/Project'; 
-import { Task } from "../../models/Task";
+
 
 export const getAllProjects = async (req: Request, res: Response) => {
     try {
@@ -17,6 +17,7 @@ export const getAllProjects = async (req: Request, res: Response) => {
        });
     }
   };   
+
 export const createProject = async (req:Request, res:Response) => {
     try {
         const project= new Project(req.body);
