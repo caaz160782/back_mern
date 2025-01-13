@@ -14,7 +14,7 @@ import { authenticate } from "../middlewares/auth";
 
 
 const router = Router();
-
+router.use( authenticate )
 /**
  * @swagger
  * components: 
@@ -58,7 +58,7 @@ const router = Router();
  *       200:
  *         description: Una lista de proyectos
  */
-router.get("/", getAllProjects);
+router.get("/",/* authenticate,*/ getAllProjects);
 
 /**
  * @swagger
@@ -80,7 +80,7 @@ router.get("/", getAllProjects);
  *       404:
  *         description: Proyecto no encontrado
  */
-router.get("/:idProject",
+router.get("/:idProject", 
     param('idProject').isMongoId().withMessage('id no valido'),
     validarErrores,
     getProjectById
@@ -115,8 +115,7 @@ router.get("/:idProject",
  *         description: Error de validación
  */
 router.post(
-    "/",
-    authenticate,
+    "/",  
     [
         check('projectName')
             .isLength({ min: 3 })
