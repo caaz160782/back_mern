@@ -9,7 +9,7 @@ type payloadUser={
 
 //expiresIn:"60s" "1h" // expires in 24 hours
 const token =  (payload:payloadUser) => {
-    const token =   jwt.sign(payload,secret, {expiresIn: "24h" } 
+    const token =   jwt.sign(payload,secret, {expiresIn: "48h" } 
     );
     return token
   };

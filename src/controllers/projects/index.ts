@@ -1,10 +1,14 @@
 import { Request,Response } from "express";
 import { Project } from '../../models/Project'; 
 
-
 export const getAllProjects = async (req: Request, res: Response) => {
     try {
-       const allProjects = await Project.find({})
+      const idManager= req.user.id
+       const allProjects = await Project.find({ 
+          $or:[
+            {manager:{$in:idManager}}
+          ]
+       })
        return res.status(200).json({
         message: "projects retrieved successfully",
         payload: allProjects
@@ -17,10 +21,10 @@ export const getAllProjects = async (req: Request, res: Response) => {
        });
     }
   };   
-
 export const createProject = async (req:Request, res:Response) => {
     try {
         const project= new Project(req.body);
+        project.manager= req.user.id
         const savedProject = await project.save();
          res.status(201).json({
            message: "Created successfully",
@@ -40,14 +44,19 @@ export const createProject = async (req:Request, res:Response) => {
 export const getProjectById = async (req: Request, res: Response) => {
     try {
       const {idProject} = req.params 
-      const project = await Project.findById(idProject).populate('tasks')
-  
+      const project = await Project.findById(idProject).populate('tasks')  
       if (!project) {
         return res.status(404).json({
           message: "project not found",
         });
       }
-  
+      
+      if (project.manager.toString() !== req.user.id.toString()) {
+         return res.status(404).json({
+          message: "Accion no valida",
+        });
+      }
+
       return res.status(200).json({
         message: "project retrieved successfully",
         payload: project
@@ -75,6 +84,11 @@ export const updateProject = async (req: Request, res: Response) => {
         });
       }
   
+      if (updatedProject.manager.toString() !== req.user.id.toString()) {
+        return res.status(404).json({
+         message: "Accion no valida",
+       });
+     }
       return res.status(200).json({
         message: "Project updated successfully",
         payload: updatedProject
@@ -98,6 +112,12 @@ export const deleteProject = async (req: Request, res: Response) => {
           message: "Project not found"
         });
       }
+
+      if (deletedProject.manager.toString() !== req.user.id.toString()) {
+        return res.status(404).json({
+         message: "Accion no valida",
+       });
+     }
   
       return res.status(200).json({
         message: "Project deleted successfully"
