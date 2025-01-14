@@ -23,12 +23,13 @@ const bearer=req.headers.authorization
         const user = await User.findById(verify.id).select('_id name email')
         if(user){
            req.user=user 
+           // Si no hay errores, continuar al siguiente middleware o controlador
+           next();
         }else{
             return  res.status(500).json({error:'Token no valido'}) 
         }    
    } catch (error) {
     return  res.status(500).json({error:'Token no valido'}) 
    }   
-   // Si no hay errores, continuar al siguiente middleware o controlador
-   next();
+ 
 };

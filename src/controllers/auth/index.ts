@@ -207,6 +207,10 @@ export class AuthController {
           error: error.message,
         });
     }        
-}
+  }
+
+  static user = async (req: Request,res:Response)=>{
+    return  res.status(201).json(req.user) 
+   }
 
 }
