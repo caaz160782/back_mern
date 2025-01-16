@@ -4,7 +4,7 @@ import { Project } from "../../models/Project";
 
 export const findMemberByEmail = async (req: Request, res: Response) => {  
    const {email} =req.body
-   const user = await User.findOne({email}).select('id')
+   const user = await User.findOne({email}).select('id email name')
    if(!user) {
     const error = new Error('Usuario no encontrado')
     return res.status(404).json({error: error.message}) 
