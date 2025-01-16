@@ -23,8 +23,8 @@ router.post('/:id_project/team/find',[
     validarErrores   
  ],addMemberById)
 
- router.delete('/:id_project/team',[ 
-    body('id').isMongoId().withMessage('id no valido'),
+ router.delete('/:id_project/team/:idUser',[ 
+    param('idUser').isMongoId().withMessage('id no valido'),
     validarErrores   
  ],deleteMemberById)
 
