@@ -6,7 +6,8 @@ export const getAllProjects = async (req: Request, res: Response) => {
       const idManager= req.user.id
        const allProjects = await Project.find({ 
           $or:[
-            {manager:{$in:idManager}}
+            {manager:{$in:idManager}},
+            {team:{$in:req.user.id}}
           ]
        })
        return res.status(200).json({
@@ -51,7 +52,7 @@ export const getProjectById = async (req: Request, res: Response) => {
         });
       }
       
-      if (project.manager.toString() !== req.user.id.toString()) {
+      if (project.manager.toString() !== req.user.id.toString() && !project.team.includes(req.user.id)) {
          return res.status(404).json({
           message: "Accion no valida",
         });
