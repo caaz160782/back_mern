@@ -1,14 +1,14 @@
-// Looking to send emails in production? Check out our Email API/SMTP product!
 import nodemailer from 'nodemailer'
-import smtp from "./config";
+import dotenv from 'dotenv'
+dotenv.config()
 
-const config=()=>{
-    return{
-        host: smtp.email.host,
-        port: +smtp.email.port,
+const config = () => {
+    return {
+        host: process.env.SMTP_HOST,
+        port: +process.env.SMTP_PORT,
         auth: {
-          user: smtp.email.user,
-          pass: smtp.email.pass
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS
         }
     }
 }
