@@ -1,4 +1,5 @@
 import { Request,Response } from "express";
+const mongoose = require('mongoose');
 import { Task } from "../../models/Task";
 
 export const createTask = async (req:Request, res:Response) => {
@@ -41,8 +42,11 @@ export const getAllTasks = async (req: Request, res: Response) => {
 export const getTaskById = async (req: Request, res: Response) => {
   try {
     const {id_task} = req.params 
-    const task = await Task.findById(id_task)//.populate('id_project')
-
+    
+    const task = await Task.findById(id_task)
+    .populate({path: 'completedBy', select: 'id name email'})
+    //.populate({path: 'notes', populate: {path: 'createdBy', select: 'id name email' }})
+    console.log(task)
     if (!task) {
       return res.status(404).json({
         message: "task not found",
@@ -122,24 +126,39 @@ export const updatedStatus = async (req: Request, res: Response) => {
   try {
     const { id_task } = req.params;
     const task = await Task.findById(id_task);
+    
     if (!task) {
-      return res.status(404).json({
-        message: "Task not found"
-      });
+        return res.status(404).json({
+            message: "Task not found"
+        });
     }
+    
     const { status } = req.body;
-    task.status=status
-    await task.save()
+    task.status = status;
+    
+    if (status === 'pending') {
+        task.completedBy = null;
+    } else {
+        // Validar si req.user.id es un ObjectId válido
+        if (mongoose.Types.ObjectId.isValid(req.user.id)) {
+            task.completedBy = new  mongoose.Types.ObjectId(req.user.id);
+        } else {
+            return res.status(400).json({
+                message: "Invalid user ID"
+            });
+        }
+    }
+    
+    await task.save();
     return res.status(200).json({
-      message: "Task status update successfully"
+        message: "Task status updated successfully"
     });
-  }
-  catch(error){
-    console.error('Error deleting Project:', error);
+} catch (error) {
+    console.error('Error update task:', error);
     return res.status(500).json({
-      message: "Server error while deleting the Task",
-      error: error.message,
+        message: "Server error while updating the task",
+        error: error.message,
     });
-  }
+}
 }
 
