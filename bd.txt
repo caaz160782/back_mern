@@ -1,0 +1,36 @@
+use net;
+
+CREATE TABLE Categorias (
+	Id int IDENTITY(1,1) NOT NULL,
+	Nombre nvarchar(MAX) COLLATE Modern_Spanish_CI_AS NOT NULL,
+	Slug nvarchar(MAX) COLLATE Modern_Spanish_CI_AS NOT NULL,
+	CONSTRAINT PK_Categorias PRIMARY KEY (Id)
+);
+
+CREATE TABLE Productos (
+	Id int IDENTITY(1,1) NOT NULL,
+	Nombre nvarchar(MAX) COLLATE Modern_Spanish_CI_AS NULL,
+	Slug nvarchar(MAX) COLLATE Modern_Spanish_CI_AS NULL,
+	Descripcion nvarchar(MAX) COLLATE Modern_Spanish_CI_AS NULL,
+	Precio int NULL,
+	Stock int NULL,
+	Fecha datetime2 NOT NULL,
+	CategoriaId int NOT NULL,
+	CONSTRAINT PK_Productos PRIMARY KEY (Id),
+	CONSTRAINT FK_Productos_Categorias_CategoriaId FOREIGN KEY (CategoriaId) REFERENCES Categorias(Id) ON DELETE CASCADE
+);
+ CREATE NONCLUSTERED INDEX IX_Productos_CategoriaId ON dbo.Productos (  CategoriaId ASC  )  
+	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
+	 ON [PRIMARY ] ;
+
+	
+CREATE TABLE ProductosFotos (
+	Id int IDENTITY(1,1) NOT NULL,
+	Nombre nvarchar(MAX) COLLATE Modern_Spanish_CI_AS NULL,
+	ProductoId int NOT NULL,
+	CONSTRAINT PK_ProductosFotos PRIMARY KEY (Id),
+	CONSTRAINT FK_ProductosFotos_Productos_ProductoId FOREIGN KEY (ProductoId) REFERENCES Productos(Id) ON DELETE CASCADE
+);
+ CREATE NONCLUSTERED INDEX IX_ProductosFotos_ProductoId ON dbo.ProductosFotos (  ProductoId ASC  )  
+	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
+	 ON [PRIMARY ] ;

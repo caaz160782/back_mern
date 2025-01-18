@@ -1,26 +1,15 @@
-import mongoose, { Connection } from "mongoose";
-import config from "./config";
+import mongoose from 'mongoose'
+import colors from 'colors'
+import { exit } from 'node:process';
 
-const MONGO_URI= `mongodb://${config.db.user}:${config.db.password}@${config.db.host}/${config.db.nameDB}`;
-//const connectionMongo= `mongodb://${config.db.user}:${config.db.password}@${config.db.host}/`;
-//console.log(connectionMongo)
-
-const connect = (): Promise<typeof mongoose> => {
-  return new Promise((resolve, reject) => {
-    mongoose.connect(MONGO_URI);
-
-    const db: Connection = mongoose.connection;
-
-    db.on("open", () => {
-      //console.warn("Connection successful");
-      resolve(mongoose);
-    });
-
-    db.on("error", (error) => {
-      //console.error("Connection failed: " + error);
-      reject(error);
-    });
-  });
-};
-
-export const db = { connect };
+export const connectDB = async () => {
+    try {
+        const {connection} = await mongoose.connect(process.env.DATABASE_URL)
+        const url = `${connection.host}:${connection.port}`
+        console.log(colors.magenta.bold(`MongoDB Conectado en: ${url}`))
+    } catch (error) {
+        // console.log(error.message)
+        console.log( colors.red.bold('Error al conectar a MongoDB') )
+        exit(1)
+    }
+}

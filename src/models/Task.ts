@@ -1,64 +1,76 @@
-import mongoose, { Document, Schema  , Types} from "mongoose";
+import mongoose, {Schema, Document, Types} from 'mongoose'
+import Note from './Note'
 
-const taskStatus ={
-    PENDING      : 'pending',
-    ON_HOLD      : 'onHold',
-    IN_PROGRESS  : 'inProgress',
-    UNDER_REVIEW : 'underReview',
-    COMPLETED    : 'completed'
+const taskStatus = {
+    PENDING: 'pending',
+    ON_HOLD: 'onHold',
+    IN_PROGRESS: 'inProgress',
+    UNDER_REVIEW: 'underReview',
+    COMPLETED: 'completed'
 } as const
 
 export type TaskStatus = typeof taskStatus[keyof typeof taskStatus]
 
 export interface ITask extends Document {
-  id_project: mongoose.Types.ObjectId;
-  name: string;
-  description: string;
-  status: TaskStatus,
-  completedBy: {
-    user: Types.ObjectId,
+    name: string
+    description: string
+    project: Types.ObjectId
     status: TaskStatus
-}[]
+    completedBy: {
+        user: Types.ObjectId,
+        status: TaskStatus
+    }[]
+    notes: Types.ObjectId[]
 }
 
-const taskSchema: Schema<ITask> = new Schema<ITask>({
-  id_project: {
-    type: Schema.Types.ObjectId, // Use `Schema.Types.ObjectId` for better compatibility
-    ref: "Project",
-    required: true,
-  },
-  name: {
-    type: String,
-    minlength: 3,
-    trim: true,
-    required: [true, "Task name is required."], 
-  },
-  description: {
-    type: String,
-    minlength: 5,
-    required: [true, "Description is required."],
-  },
-  status:{
-    type: String,
-    enum: Object.values(taskStatus),
-    default: taskStatus.PENDING
-  },
-  completedBy: [
-    {
-        user: {
-            type:  Schema.Types.ObjectId,
-            ref: 'User',
-            default: null
-        },
-        status: {
-            type: String,
-            enum: Object.values(taskStatus),
-            default: taskStatus.PENDING
+export const TaskSchema : Schema = new Schema({
+    name: {
+        type: String,
+        trim: true,
+        required: true
+    },
+    description: {
+        type: String,
+        trim: true,
+        required: true
+    },
+    project: {
+        type: Types.ObjectId,
+        ref: 'Project'
+    },
+    status: {
+        type: String,
+        enum: Object.values(taskStatus),
+        default: taskStatus.PENDING
+    },
+    completedBy: [
+        {
+            user: {
+                type: Types.ObjectId,
+                ref: 'User',
+                default: null
+            },
+            status: {
+                type: String,
+                enum: Object.values(taskStatus),
+                default: taskStatus.PENDING
+            }
         }
-    }
-],
-},{timestamps:true});
+    ],
+    notes: [
+        {
+            type: Types.ObjectId,
+            ref: 'Note'
+        }
+    ]
+}, {timestamps: true})
 
-const Task = mongoose.model<ITask>("Task", taskSchema);
+// Middleware
+TaskSchema.pre('deleteOne', {document: true}, async function() {
+    const taskId = this._id
+    if(!taskId) return
+    await Note.deleteMany({task: taskId})
+})
 
-export { Task, taskSchema };
+const Task = mongoose.model<ITask>('Task', TaskSchema)
+export default Task

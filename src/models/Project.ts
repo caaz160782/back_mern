@@ -1,53 +1,63 @@
-import mongoose, { Document, Schema ,PopulatedDoc,Types, } from "mongoose";
-import {ITask} from './Task'
-import { IUser } from "./user";
+import mongoose, {Schema, Document, PopulatedDoc, Types} from 'mongoose'
+import Task, { ITask } from './Task'
+import { IUser } from './User'
+import Note from './Note'
 
 export interface IProject extends Document {
-  projectName: string;
-  clientName: string;
-  description: string;
-  tasks:PopulatedDoc<ITask & Document>[]
-  manager: PopulatedDoc<IUser & Document>
-  team: PopulatedDoc<IUser & Document>[]
+    projectName: string
+    clientName: string
+    description: string
+    tasks: PopulatedDoc<ITask & Document>[]
+    manager: PopulatedDoc<IUser & Document>
+    team: PopulatedDoc<IUser & Document>[]
 }
 
-const projectSchema: Schema<IProject> = new Schema<IProject>({
-
-  projectName: {
-    type: String,
-    minlength:3 ,
-    trim:true,    
-    required: [true, "Project projectName is required."],
-  },
-  clientName: {
-    type: String,
-    minlength: 5,
-    required: [true, "Client clientName is required."],
-  },
-  description: {
-    type: String,
-    minlength: 5,
-    required: [true, "Description is required."],
-  },
-  tasks:[
-    {
-      type:Types.ObjectId,
-      ref:'Task'
-    }
-  ],
-  manager:
-    {
-      type:Types.ObjectId,
-      ref:'User'
+const ProjectSchema: Schema = new Schema({
+    projectName: {
+        type: String,
+        required: true,
+        trim: true
     },
-    team:[
-      {
-       type:Types.ObjectId,
-       ref:'User'
-      }
-    ],  
-},{timestamps:true});
+    clientName: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    description: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    tasks: [
+        {
+            type: Types.ObjectId,
+            ref: 'Task'
+        }
+    ],
+    manager: {
+        type: Types.ObjectId,
+        ref: 'User'
+    },
+    team: [
+        {
+            type: Types.ObjectId,
+            ref: 'User'
+        }
+    ],
+}, {timestamps: true})
 
-const Project = mongoose.model<IProject>("Project", projectSchema);
+// Middleware
+ProjectSchema.pre('deleteOne', {document: true}, async function() {
+    const projectId = this._id
+    if(!projectId) return
 
-export { Project, projectSchema };
+    const tasks = await Task.find({ project: projectId })
+    for(const task of tasks) {
+        await Note.deleteMany({ task: task.id})
+    }
+
+    await Task.deleteMany({project: projectId})
+})
+
+const Project = mongoose.model<IProject>('Project', ProjectSchema)
+export default Project
